@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APM Portal</title>
+<style>
+  :root {
+    --bg: #0c0f1a;
+    --surface: #141828;
+    --surface-2: #1c2238;
+    --border: #252d45;
+    --accent: #4f6ef7;
+    --accent-hover: #3d5be0;
+    --accent-glow: rgba(79,110,247,0.18);
+    --text: #e4e9f7;
+    --text-muted: #7b88b0;
+    --text-dim: #4a5578;
+    --danger: #e05c6a;
+    --success: #3ecf8e;
+    --input-bg: #0e1220;
+    --card-1: #1e3a5f;
+    --card-2: #1e3a40;
+    --shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f0f2fa;
+      --surface: #ffffff;
+      --surface-2: #f5f7ff;
+      --border: #dce1f5;
+      --accent: #4f6ef7;
+      --accent-hover: #3d5be0;
+      --accent-glow: rgba(79,110,247,0.12);
+      --text: #111827;
+      --text-muted: #4b5680;
+      --text-dim: #9aa3c0;
+      --danger: #d63f51;
+      --success: #25a572;
+      --input-bg: #f8f9ff;
+      --card-1: #e8eeff;
+      --card-2: #e6f5ee;
+      --shadow: 0 8px 40px rgba(79,110,247,0.1);
+    }
+  }
+
+  :root[data-theme="light"] {
+    --bg: #f0f2fa;
+    --surface: #ffffff;
+    --surface-2: #f5f7ff;
+    --border: #dce1f5;
+    --accent: #4f6ef7;
+    --accent-hover: #3d5be0;
+    --accent-glow: rgba(79,110,247,0.12);
+    --text: #111827;
+    --text-muted: #4b5680;
+    --text-dim: #9aa3c0;
+    --danger: #d63f51;
+    --success: #25a572;
+    --input-bg: #f8f9ff;
+    --card-1: #e8eeff;
+    --card-2: #e6f5ee;
+    --shadow: 0 8px 40px rgba(79,110,247,0.1);
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0c0f1a;
+    --surface: #141828;
+    --surface-2: #1c2238;
+    --border: #252d45;
+    --accent: #4f6ef7;
+    --accent-hover: #3d5be0;
+    --accent-glow: rgba(79,110,247,0.18);
+    --text: #e4e9f7;
+    --text-muted: #7b88b0;
+    --text-dim: #4a5578;
+    --danger: #e05c6a;
+    --success: #3ecf8e;
+    --input-bg: #0e1220;
+    --card-1: #1e3a5f;
+    --card-2: #1e3a40;
+    --shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ── Theme toggle ── */
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 16px;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    z-index: 100;
+  }
+  .theme-toggle:hover { background: var(--border); color: var(--text); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ── Screens ── */
+  .screen { display: none; width: 100%; }
+  .screen.active { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+
+  /* ── Login card ── */
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+
+  .brand-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .login-heading {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    text-wrap: balance;
+  }
+
+  .login-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+
+  .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .field input {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    width: 100%;
+  }
+
+  .field input::placeholder { color: var(--text-dim); }
+
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .error-msg {
+    font-size: 13px;
+    color: var(--danger);
+    margin-bottom: 14px;
+    min-height: 18px;
+    display: none;
+  }
+  .error-msg.visible { display: block; }
+
+  .btn-login {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    font-family: inherit;
+    letter-spacing: -0.1px;
+    margin-top: 4px;
+  }
+
+  .btn-login:hover { background: var(--accent-hover); box-shadow: 0 4px 16px var(--accent-glow); }
+  .btn-login:active { transform: translateY(1px); }
+  .btn-login:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ── Portal / app selector ── */
+  .portal {
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 24px;
+    width: 100%;
+  }
+
+  .portal-header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .portal-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .portal-mark {
+    width: 48px;
+    height: 48px;
+    background: var(--accent);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .portal-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    color: var(--text);
+    text-wrap: balance;
+    margin-bottom: 8px;
+  }
+
+  .portal-welcome {
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  .portal-welcome span {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .app-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px 28px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .app-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s;
+    border-radius: inherit;
+  }
+
+  .app-card:nth-child(1)::before { background: radial-gradient(ellipse at 30% 20%, var(--card-1), transparent 70%); }
+  .app-card:nth-child(2)::before { background: radial-gradient(ellipse at 30% 20%, var(--card-2), transparent 70%); }
+
+  .app-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 12px 36px var(--accent-glow); }
+  .app-card:hover::before { opacity: 1; }
+  .app-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .app-card:active { transform: translateY(-1px); }
+
+  .app-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .app-card:nth-child(1) .app-icon { background: rgba(79,110,247,0.15); }
+  .app-card:nth-child(2) .app-icon { background: rgba(62,207,142,0.15); }
+
+  .app-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .app-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    position: relative;
+    z-index: 1;
+  }
+
+  .app-arrow {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    color: var(--text-dim);
+    font-size: 18px;
+    transition: transform 0.2s, color 0.2s;
+    z-index: 1;
+  }
+
+  .app-card:hover .app-arrow { transform: translate(3px, -3px); color: var(--accent); }
+
+  .portal-footer {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .logout-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--danger); color: var(--danger); background: rgba(224,92,106,0.06); }
+  .logout-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Theme toggle -->
+<button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+
+<!-- ── LOGIN SCREEN ── -->
+<section class="screen active" id="loginScreen">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mark">AP</div>
+      <div class="brand-text">
+        <span class="brand-name">APM Industries</span>
+        <span class="brand-sub">Internal Portal</span>
+      </div>
+    </div>
+
+    <h1 class="login-heading">Welcome back</h1>
+    <p class="login-sub">Sign in to access your applications.</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter username" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" />
+      </div>
+      <p class="error-msg" id="errorMsg">Incorrect username or password.</p>
+      <button type="submit" class="btn-login">Sign in</button>
+    </form>
+  </div>
+</section>
+
+<!-- ── PORTAL / APP SELECTOR SCREEN ── -->
+<section class="screen" id="portalScreen">
+  <div class="portal">
+    <div class="portal-header">
+      <div class="portal-brand">
+        <div class="portal-mark">AP</div>
+      </div>
+      <h2 class="portal-title">Choose an application</h2>
+      <p class="portal-welcome">Signed in as <span id="displayUser">user</span></p>
+    </div>
+
+    <div class="apps-grid">
+      <!-- App 1 -->
+      <a class="app-card" href="#" id="appCard1" tabindex="0" role="button"
+         data-url="https://script.google.com/macros/s/AKfycbxoCStXp-Vceeag2qzNJ8FRo_Q9PdFkEt2dsqQ0Yb7KYGbv93SZhGGYW3GOrmpGITG1og/exec">
+        <div class="app-icon">🧾</div>
+        <div class="app-name">Challan System</div>
+        <p class="app-desc">Generate and manage challans, delivery notes, and dispatch records.</p>
+        <span class="app-arrow">↗</span>
+      </a>
+
+      <!-- App 2 -->
+      <a class="app-card" href="#" id="appCard2" tabindex="0" role="button"
+         data-url="https://script.google.com/macros/s/AKfycbzSMJ4_omK301b-mH94441M2B_3lu72P2SckGKOGvsH8pidZ8gmZlsoZLtd-YADo5IU/exec">
+        <div class="app-icon">📋</div>
+        <div class="app-name">QuotePro</div>
+        <p class="app-desc">Create and manage quotations, pricing, and client proposals.</p>
+        <span class="app-arrow">↗</span>
+      </a>
+    </div>
+
+    <div class="portal-footer">
+      <button class="logout-btn" id="logoutBtn">Sign out</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────────────────
+  // Replace these with your actual credentials (or hook up a backend)
+  const USERS = {
+    admin: 'apm123',
+    vinay: 'vinay123'
+  };
+  // ────────────────────────────────────────────────────────────────────────
+
+  const loginScreen  = document.getElementById('loginScreen');
+  const portalScreen = document.getElementById('portalScreen');
+  const loginForm    = document.getElementById('loginForm');
+  const errorMsg     = document.getElementById('errorMsg');
+  const displayUser  = document.getElementById('displayUser');
+  const logoutBtn    = document.getElementById('logoutBtn');
+  const themeToggle  = document.getElementById('themeToggle');
+
+  // Theme
+  const savedTheme = localStorage.getItem('apm-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('apm-theme', next);
+  });
+
+  function applyTheme(t) {
+    document.documentElement.dataset.theme = t;
+    themeToggle.textContent = t === 'dark' ? '☀' : '🌙';
+  }
+
+  // Login
+  loginForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value;
+
+    if (USERS[u] && USERS[u] === p) {
+      errorMsg.classList.remove('visible');
+      displayUser.textContent = u;
+      showScreen(portalScreen);
+      loginForm.reset();
+    } else {
+      errorMsg.classList.add('visible');
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
+    }
+  });
+
+  // App cards — navigate to the URL stored in data-url
+  document.querySelectorAll('.app-card').forEach(card => {
+    card.addEventListener('click', e => {
+      e.preventDefault();
+      const url = card.dataset.url;
+      if (!url || url.startsWith('YOUR_APP')) {
+        alert('Please set the URL in data-url on this card.');
+        return;
+      }
+      window.location.href = url;
+    });
+  });
+
+  // Logout
+  logoutBtn.addEventListener('click', () => {
+    showScreen(loginScreen);
+  });
+
+  function showScreen(target) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    target.classList.add('active');
+  }
+</script>
+</body>
+</html>
