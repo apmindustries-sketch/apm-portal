@@ -1,0 +1,20 @@
+{
+  "name": "APM Industries Portal",
+  "short_name": "APM Portal",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c0f1a",
+  "theme_color": "#4f6ef7",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
