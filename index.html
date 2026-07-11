@@ -252,6 +252,24 @@
   .btn-login:active { transform: translateY(1px); }
   .btn-login:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
+  .remember-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .remember-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .remember-row label {
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
   /* ── Portal / app selector ── */
   .portal {
     flex-direction: column;
@@ -441,6 +459,10 @@
         <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" />
       </div>
       <p class="error-msg" id="errorMsg">Incorrect username or password.</p>
+      <div class="remember-row">
+        <input type="checkbox" id="rememberMe">
+        <label for="rememberMe">Keep me signed in</label>
+      </div>
       <button type="submit" class="btn-login">Sign in</button>
     </form>
   </div>
@@ -516,15 +538,28 @@
     themeToggle.textContent = t === 'dark' ? '☀' : '🌙';
   }
 
+  // Auto-login if remembered
+  const rememberedUser = localStorage.getItem('apm-user');
+  if (rememberedUser) {
+    displayUser.textContent = rememberedUser;
+    showScreen(portalScreen);
+  }
+
   // Login
   loginForm.addEventListener('submit', e => {
     e.preventDefault();
     const u = document.getElementById('username').value.trim();
     const p = document.getElementById('password').value;
+    const remember = document.getElementById('rememberMe').checked;
 
     if (USERS[u] && USERS[u] === p) {
       errorMsg.classList.remove('visible');
       displayUser.textContent = u;
+      if (remember) {
+        localStorage.setItem('apm-user', u);
+      } else {
+        localStorage.removeItem('apm-user');
+      }
       showScreen(portalScreen);
       loginForm.reset();
     } else {
@@ -547,8 +582,9 @@
     });
   });
 
-  // Logout
+  // Logout — clears remembered session
   logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('apm-user');
     showScreen(loginScreen);
   });
 
